@@ -1,0 +1,32 @@
+<div class="task-card" (mouseenter)="showActions.set(true)" (mouseleave)="showActions.set(false)">
+  <div class="task-header">
+    <h3 class="task-title">{{ task.title }}</h3>
+    <div class="task-actions" *ngIf="showActions()">
+      <button class="action-btn edit-btn" (click)="onEdit()" title="Edit task">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </button>
+      <button class="action-btn delete-btn" (click)="onDelete()" title="Delete task">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3,6 5,6 21,6"></polyline>
+          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="task-content" *ngIf="task.description">
+    <p class="task-description">{{ task.description }}</p>
+  </div>
+
+  <div class="task-footer">
+    <div class="priority-badge" [style.background-color]="getPriorityColor()">
+      {{ getPriorityLabel() }}
+    </div>
+    <div class="task-date">
+      {{ task.createdAt | date:'MMM d' }}
+    </div>
+  </div>
+</div>
