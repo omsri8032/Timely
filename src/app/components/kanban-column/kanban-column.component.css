@@ -1,39 +1,52 @@
 .kanban-column {
-  background: #f9fafb;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
   min-height: 500px;
   width: 100%;
   max-width: 350px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.kanban-column:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .column-header {
   padding: 20px 20px 16px 20px;
-  border-top: 4px solid;
-  background: white;
-  border-radius: 12px 12px 0 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  border-radius: 16px 16px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .column-title {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .task-count {
-  background: #e5e7eb;
-  color: #6b7280;
-  padding: 4px 8px;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  min-width: 24px;
+  min-width: 28px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .column-content {

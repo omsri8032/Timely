@@ -13,17 +13,33 @@ import { TaskCardComponent } from '../task-card/task-card.component';
 })
 export class KanbanColumnComponent {
   @Input() title!: string;
-  @Input() status!: Task['status'];
+  @Input() columnId!: string;
   @Input() tasks: Task[] = [];
-  @Output() taskMoved = new EventEmitter<{taskId: string, newStatus: Task['status']}>();
+  @Input() connectedIds: string[] = [];
+
+  @Output() reorder = new EventEmitter<{ columnId: string; previousIndex: number; currentIndex: number }>();
+  @Output() moveToColumn = new EventEmitter<{ taskId: string; targetColumnId: string; targetIndex: number }>();
   @Output() editTask = new EventEmitter<Task>();
   @Output() deleteTask = new EventEmitter<string>();
+  @Output() deleteColumn = new EventEmitter<string>();
 
   public isDragOver = signal(false);
 
   onDrop(event: any): void {
-    const taskId = event.item.data.id;
-    this.taskMoved.emit({ taskId, newStatus: this.status });
+    // Basic guards
+    if (!event || !event.container) return;
+
+    const sameContainer = event.previousContainer?.id === event.container.id;
+    const targetIndex = event.currentIndex ?? 0;
+
+    if (sameContainer) {
+      if (event.previousIndex === targetIndex) return; // no-op
+      this.reorder.emit({ columnId: this.columnId, previousIndex: event.previousIndex, currentIndex: targetIndex });
+    } else {
+      const taskId = event.item?.data?.id;
+      if (!taskId) return;
+      this.moveToColumn.emit({ taskId, targetColumnId: this.columnId, targetIndex });
+    }
   }
 
   onEditTask(task: Task): void {
@@ -34,16 +50,7 @@ export class KanbanColumnComponent {
     this.deleteTask.emit(taskId);
   }
 
-  getColumnColor(): string {
-    switch (this.status) {
-      case 'todo':
-        return '#6b7280';
-      case 'in-progress':
-        return '#3b82f6';
-      case 'done':
-        return '#10b981';
-      default:
-        return '#6b7280';
-    }
+  onDeleteColumn(): void {
+    this.deleteColumn.emit(this.columnId);
   }
 }

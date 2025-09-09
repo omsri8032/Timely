@@ -1,20 +1,23 @@
 <div class="kanban-column">
-  <div class="column-header" [style.border-top-color]="getColumnColor()">
+  <div class="column-header">
     <h3 class="column-title">{{ title }}</h3>
-    <span class="task-count">{{ tasks.length }}</span>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="task-count">{{ tasks.length }}</span>
+      <button class="btn btn-secondary" style="padding:6px 10px;" (click)="onDeleteColumn()">Delete</button>
+    </div>
   </div>
   
   <div 
     class="column-content"
     cdkDropList
     [cdkDropListData]="tasks"
-    [cdkDropListConnectedTo]="['todo-list', 'in-progress-list', 'done-list']"
-    [id]="status + '-list'"
+    [cdkDropListConnectedTo]="connectedIds"
+    [id]="columnId"
     (cdkDropListDropped)="onDrop($event)"
   >
     <div 
       class="task-item"
-      *ngFor="let task of tasks"
+      *ngFor="let task of tasks; let i = index"
       cdkDrag
       [cdkDragData]="task"
     >

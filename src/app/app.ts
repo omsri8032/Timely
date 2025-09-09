@@ -19,6 +19,18 @@ export class AppComponent {
 
   constructor(public taskService: TaskService) {}
 
+  // Helpers for template to avoid complex expressions
+  getTasksForColumn(columnId: string): Task[] {
+    return this.taskService
+      .tasks()
+      .filter(t => t.columnId === columnId)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+
+  getConnectedIds(): string[] {
+    return this.taskService.columns().map(c => c.id);
+  }
+
   onAddTask(): void {
     this.editingTask.set(undefined);
     this.showTaskForm.set(true);
@@ -48,7 +60,22 @@ export class AppComponent {
     this.taskService.deleteTask(taskId);
   }
 
-  onTaskMoved(event: { taskId: string, newStatus: Task['status'] }): void {
-    this.taskService.moveTask(event.taskId, event.newStatus);
+  onReorder(evt: { columnId: string; previousIndex: number; currentIndex: number }): void {
+    this.taskService.reorderWithinColumn(evt.columnId, evt.previousIndex, evt.currentIndex);
+  }
+
+  onMoveToColumn(evt: { taskId: string; targetColumnId: string; targetIndex: number }): void {
+    this.taskService.moveToAnotherColumn(evt.taskId, evt.targetColumnId, evt.targetIndex);
+  }
+
+  onAddColumn(): void {
+    const title = prompt('Column title');
+    if (title && title.trim()) this.taskService.addColumn(title.trim());
+  }
+
+  onDeleteColumn(columnId: string): void {
+    if (confirm('Delete this column and all its tasks?')) {
+      this.taskService.deleteColumn(columnId);
+    }
   }
 }

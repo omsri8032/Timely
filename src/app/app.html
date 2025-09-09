@@ -8,48 +8,37 @@
         </svg>
         Kanban Task Manager
       </h1>
-      <button class="add-task-btn" (click)="onAddTask()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Add Task
-      </button>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="add-task-btn" (click)="onAddTask()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Task
+        </button>
+        <button class="add-task-btn" (click)="onAddColumn()">+ Column</button>
+      </div>
     </div>
   </header>
 
   <main class="app-main">
     <div class="kanban-board" cdkDropListGroup>
-      <app-kanban-column
-        title="To Do"
-        status="todo"
-        [tasks]="taskService.todoTasks()"
-        (taskMoved)="onTaskMoved($event)"
-        (editTask)="onEditTask($event)"
-        (deleteTask)="onDeleteTask($event)"
-      ></app-kanban-column>
-
-      <app-kanban-column
-        title="In Progress"
-        status="in-progress"
-        [tasks]="taskService.inProgressTasks()"
-        (taskMoved)="onTaskMoved($event)"
-        (editTask)="onEditTask($event)"
-        (deleteTask)="onDeleteTask($event)"
-      ></app-kanban-column>
-
-      <app-kanban-column
-        title="Done"
-        status="done"
-        [tasks]="taskService.doneTasks()"
-        (taskMoved)="onTaskMoved($event)"
-        (editTask)="onEditTask($event)"
-        (deleteTask)="onDeleteTask($event)"
-      ></app-kanban-column>
+      <ng-container *ngFor="let col of taskService.columns()">
+        <app-kanban-column
+          [title]="col.title"
+          [columnId]="col.id"
+          [tasks]="getTasksForColumn(col.id)"
+          [connectedIds]="getConnectedIds()"
+          (reorder)="onReorder($event)"
+          (moveToColumn)="onMoveToColumn($event)"
+          (editTask)="onEditTask($event)"
+          (deleteTask)="onDeleteTask($event)"
+          (deleteColumn)="onDeleteColumn($event)"
+        ></app-kanban-column>
+      </ng-container>
     </div>
   </main>
 
-  <!-- Task Form Modal -->
   <app-task-form
     *ngIf="showTaskForm()"
     [task]="editingTask()"
