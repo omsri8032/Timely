@@ -17,6 +17,13 @@
           Add Task
         </button>
         <button class="add-task-btn" (click)="onAddColumn()">+ Column</button>
+        <ng-container *ngIf="auth.currentUserEmail(); else loggedOut">
+          <span style="color:#374151; font-weight:600;">{{ auth.currentUserEmail() }}</span>
+          <button class="add-task-btn" (click)="logout()">Logout</button>
+        </ng-container>
+        <ng-template #loggedOut>
+          <button class="add-task-btn" (click)="openAuth()">Login / Sign up</button>
+        </ng-template>
       </div>
     </div>
   </header>
@@ -45,4 +52,7 @@
     (saveTask)="onSaveTask($event)"
     (cancel)="onCancelForm()"
   ></app-task-form>
+
+  <app-auth-modal *ngIf="showAuth()" (close)="closeAuth()"></app-auth-modal>
+  <app-snackbar></app-snackbar>
 </div>

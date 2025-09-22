@@ -1,0 +1,7 @@
+<div *ngIf="snackbar.isVisible()" [class]="cssClass()" (click)="snackbar.hide()">
+  <span class="snackbar__message">{{ snackbar.message() }}</span>
+  <button class="snackbar__close" aria-label="Close">×</button>
+  
+</div>
+
+

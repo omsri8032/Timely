@@ -1,0 +1,27 @@
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  cursor: pointer;
+  user-select: none;
+}
+
+.snackbar--success { background: linear-gradient(135deg, #34d399, #10b981); }
+.snackbar--info    { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+.snackbar--warning { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.snackbar--error   { background: linear-gradient(135deg, #f87171, #ef4444); }
+
+.snackbar__message { font-weight: 600; letter-spacing: 0.2px; }
+.snackbar__close   { background: transparent; border: none; color: inherit; font-size: 18px; }
+
+
