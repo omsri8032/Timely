@@ -16,12 +16,13 @@
   user-select: none;
 }
 
-.snackbar--success { background: linear-gradient(135deg, #34d399, #10b981); }
-.snackbar--info    { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
-.snackbar--warning { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.snackbar--error   { background: linear-gradient(135deg, #f87171, #ef4444); }
+.snackbar--success { background: #36b37e; }
+.snackbar--info    { background: #3388ff; }
+.snackbar--warning { background: #f5a623; }
+.snackbar--error   { background: #de350b; }
 
 .snackbar__message { font-weight: 600; letter-spacing: 0.2px; }
 .snackbar__close   { background: transparent; border: none; color: inherit; font-size: 18px; }
+
 
 

@@ -1,15 +1,14 @@
 .kanban-column {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
   border-radius: 16px;
-  min-height: 500px;
+  min-height: 520px;
   width: 100%;
-  max-width: 350px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .kanban-column:hover {
@@ -18,13 +17,32 @@
 }
 
 .column-header {
-  padding: 20px 20px 16px 20px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  padding: 18px 18px 14px 18px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
   border-radius: 16px 16px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.col-del-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #7a869a;
+  cursor: pointer;
+}
+
+.col-del-btn:hover {
+  background: #f7f8fa;
+  color: #de350b;
+  border-color: #f1f2f4;
 }
 
 .column-title {
@@ -37,24 +55,9 @@
   background-clip: text;
 }
 
-.task-count {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  min-width: 28px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
+.task-count { background: #e9edf5; color: #42526e; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; min-width: 28px; text-align: center; box-shadow: none; }
 
-.column-content {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  min-height: 400px;
-}
+.column-content { flex: 1; padding: 18px; overflow-y: auto; min-height: 420px; }
 
 .task-item {
   margin-bottom: 12px;

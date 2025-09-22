@@ -1,4 +1,6 @@
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { AuthService } from './auth.service';
+import { DatabaseService } from './database.service';
 import { isPlatformBrowser } from '@angular/common';
 import { Task } from '../models/task.model';
 import { Column } from '../models/column.model';
@@ -7,70 +9,95 @@ import { Column } from '../models/column.model';
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly TASKS_KEY = 'kanban-tasks';
-  private readonly COLUMNS_KEY = 'kanban-columns';
+  private readonly TASKS_KEY_BASE = 'kanban-tasks';
+  private readonly COLUMNS_KEY_BASE = 'kanban-columns';
   private platformId = inject(PLATFORM_ID);
+  private auth = inject(AuthService);
+  private db = inject(DatabaseService);
   
   // Reactive state
   public tasks = signal<Task[]>([]);
   public columns = signal<Column[]>([]);
+  private lastLoadedUserKey: string | null = null;
 
   constructor() {
-    this.loadFromStorage();
+    // One-time migration to consolidated database
+    this.db.migrateLegacyIfPresent();
+    this.loadForCurrentUser();
   }
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  private loadFromStorage(): void {
-    if (!this.isBrowser()) return;
+  private storageKeys(): { tasksKey: string; columnsKey: string } | null { return null; }
 
-    // Columns
-    const storedColumns = localStorage.getItem(this.COLUMNS_KEY);
-    if (storedColumns) {
-      this.columns.set(JSON.parse(storedColumns));
-    } else {
-      // default columns
+  public loadForCurrentUser(): void {
+    if (!this.isBrowser()) return;
+    // Reset current in-memory state first to avoid mixing boards
+    this.tasks.set([]);
+    this.columns.set([]);
+
+    const email = this.auth.currentUserEmail();
+    if (!email) {
+      // Guest: non-persistent default board
       const defaults: Column[] = [
         { id: 'todo', title: 'To Do', order: 0 },
         { id: 'in-progress', title: 'In Progress', order: 1 },
         { id: 'done', title: 'Done', order: 2 }
       ];
       this.columns.set(defaults);
-      localStorage.setItem(this.COLUMNS_KEY, JSON.stringify(defaults));
+      this.tasks.set([]);
+      this.normalizeOrders();
+      return;
     }
 
-    // Tasks
-    const storedTasks = localStorage.getItem(this.TASKS_KEY);
-    const parsed: Task[] = storedTasks ? JSON.parse(storedTasks) : [];
-    const tasks: Task[] = parsed.map((task: any) => ({
-      ...task,
-      createdAt: new Date(task.createdAt),
-      updatedAt: new Date(task.updatedAt)
+    const board = this.db.getCurrentUserBoard();
+    const tasks: Task[] = (board.tasks || []).map((t: any) => ({
+      ...t,
+      createdAt: new Date(t.createdAt),
+      updatedAt: new Date(t.updatedAt)
     }));
 
-    // Backward compatibility: map status -> columnId when not present
-    const existingColumns = this.columns();
+    // Map legacy status -> columnId if needed
+    const existingColumns = board.columns || [];
     tasks.forEach(t => {
       if (!t.columnId) {
         const colId = existingColumns.find(c => c.id === t.status)?.id || 'todo';
         t.columnId = colId;
       }
-      if (typeof t.order !== 'number') {
-        t.order = 0;
-      }
+      if (typeof t.order !== 'number') t.order = 0;
     });
 
+    this.columns.set(existingColumns);
     this.tasks.set(tasks);
     this.normalizeOrders();
-    this.saveAll();
+  }
+
+  // Clear current user's board and reinitialize defaults
+  public resetForCurrentUser(): void {
+    // initialize defaults in-memory
+    const defaults: Column[] = [
+      { id: 'todo', title: 'To Do', order: 0 },
+      { id: 'in-progress', title: 'In Progress', order: 1 },
+      { id: 'done', title: 'Done', order: 2 }
+    ];
+    this.columns.set(defaults);
+    this.tasks.set([]);
+
+    // persist only for logged-in users
+    const keys = this.storageKeys();
+    if (keys && this.isBrowser()) {
+      localStorage.setItem(keys.columnsKey, JSON.stringify(defaults));
+      localStorage.setItem(keys.tasksKey, JSON.stringify([]));
+    }
   }
 
   private saveAll(): void {
     if (!this.isBrowser()) return;
-    localStorage.setItem(this.TASKS_KEY, JSON.stringify(this.tasks()));
-    localStorage.setItem(this.COLUMNS_KEY, JSON.stringify(this.columns()));
+    const email = this.auth.currentUserEmail();
+    if (!email) return; // Guest: do not persist
+    this.db.saveCurrentUserBoard({ tasks: this.tasks(), columns: this.columns() });
   }
 
   private generateId(): string {
@@ -105,7 +132,12 @@ export class TaskService {
 
   // Tasks CRUD
   addTask(taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { columnId?: string; }): void {
-    const columnId = taskData.columnId ?? taskData.status ?? 'todo';
+    // Determine a safe target column
+    let columnId = taskData.columnId ?? taskData.status ?? 'todo';
+    const available = this.columns();
+    if (!available.some(c => c.id === columnId)) {
+      columnId = available.length ? available[0].id : 'todo';
+    }
     const order = this.nextOrderForColumn(columnId);
     const newTask: Task = {
       ...taskData,

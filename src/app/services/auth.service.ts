@@ -16,12 +16,14 @@ export class AuthService {
 
   public readonly currentUserEmail = signal<string | null>(null);
 
+  private normalize(email: string): string { return email.trim().toLowerCase(); }
+
   private isBrowser(): boolean { return isPlatformBrowser(this.platformId); }
 
   constructor() {
     if (this.isBrowser()) {
       const email = localStorage.getItem(this.SESSION_KEY);
-      if (email) this.currentUserEmail.set(email);
+      if (email) this.currentUserEmail.set(this.normalize(email));
     }
   }
 
@@ -45,18 +47,20 @@ export class AuthService {
 
   signup(name: string, email: string, password: string): { ok: boolean; message: string } {
     const users = this.loadUsers();
-    if (users.some(u => u.email === email)) return { ok: false, message: 'Email already registered' };
-    users.push({ id: Date.now().toString(36), email, name, passwordHash: this.hash(password) });
+    const em = this.normalize(email);
+    if (users.some(u => u.email === em)) return { ok: false, message: 'Email already registered' };
+    users.push({ id: Date.now().toString(36), email: em, name, passwordHash: this.hash(password) });
     this.saveUsers(users);
     return { ok: true, message: 'Account created' };
   }
 
   login(email: string, password: string): { ok: boolean; message: string } {
     const users = this.loadUsers();
-    const found = users.find(u => u.email === email && u.passwordHash === this.hash(password));
+    const em = this.normalize(email);
+    const found = users.find(u => u.email === em && u.passwordHash === this.hash(password));
     if (!found) return { ok: false, message: 'Invalid credentials' };
-    if (this.isBrowser()) localStorage.setItem(this.SESSION_KEY, email);
-    this.currentUserEmail.set(email);
+    if (this.isBrowser()) localStorage.setItem(this.SESSION_KEY, em);
+    this.currentUserEmail.set(em);
     return { ok: true, message: 'Logged in' };
   }
 

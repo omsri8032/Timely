@@ -13,6 +13,7 @@ import { SnackbarService } from '../../services/snackbar.service';
 })
 export class AuthModalComponent {
   @Output() close = new EventEmitter<void>();
+  @Output() loggedIn = new EventEmitter<void>();
 
   public mode = signal<'login' | 'signup'>('login');
   public name = signal('');
@@ -34,7 +35,10 @@ export class AuthModalComponent {
     }
     const res = this.auth.login(this.email(), this.password());
     this.snackbar.show(res.message, res.ok ? 'success' : 'error');
-    if (res.ok) this.close.emit();
+    if (res.ok) {
+      this.loggedIn.emit();
+      this.close.emit();
+    }
   }
 }
 

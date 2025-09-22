@@ -99,6 +99,10 @@ export class AppComponent {
   closeAuth(): void { this.showAuth.set(false); }
   logout(): void {
     this.auth.logout();
+    this.taskService.loadForCurrentUser();
     this.snackbar.show('Logged out', 'info');
   }
+
 }
+
+

@@ -7,28 +7,22 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  /* Jira-like light canvas */
+  background-color: #f4f5f7;
+  background-image:
+    radial-gradient(#dfe1e6 1px, transparent 1px),
+    radial-gradient(#dfe1e6 1px, transparent 1px),
+    linear-gradient(180deg, rgba(9,30,66,0.02), rgba(9,30,66,0.02));
+  background-size: 24px 24px, 24px 24px, 100% 100%;
+  background-position: 0 0, 12px 12px, 0 0;
   min-height: 100vh;
-  color: #1f2937;
+  color: #172b4d;
   position: relative;
   overflow-x: hidden;
 }
 
-/* Animated background elements */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-  animation: backgroundShift 20s ease-in-out infinite;
-  z-index: -1;
-}
+/* Disable previous colorful blobs to match Jira */
+body::before { content: none; }
 
 @keyframes backgroundShift {
   0%, 100% { transform: translateX(0) translateY(0); }
@@ -71,23 +65,17 @@ body::before {
   gap: 12px;
   font-size: 1.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #172b4d; /* Jira-like heading */
   margin: 0;
 }
 
-.header-icon {
-  color: #667eea;
-  filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
-}
+.header-icon { color: #42526e; filter: none; }
 
 .add-task-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #0052cc; /* solid */
   color: white;
   border: none;
   padding: 12px 20px;
@@ -96,33 +84,27 @@ body::before {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 }
 
-.add-task-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
+.add-task-btn::before { content: none; }
 
-.add-task-btn:hover::before {
-  left: 100%;
-}
-
-.add-task-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-}
+.add-task-btn:hover { transform: none; box-shadow: none; filter: brightness(0.95); }
 
 .add-task-btn:active {
   transform: translateY(0);
+}
+
+.user-chip {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: #4b5563;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
 /* Main Content */
@@ -132,14 +114,24 @@ body::before {
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  position: relative;
 }
 
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  gap: 24px;
   align-items: start;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
+
+/* Decorative background blobs behind the board */
+/* Remove previous color blobs */
+.app-main::before,
+.app-main::after { content: none; }
 
 /* Responsive Design */
 @media (max-width: 768px) {
