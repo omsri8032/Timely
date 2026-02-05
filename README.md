@@ -1,178 +1,138 @@
-# Kanban Task Manager
+# Timely - Smart Task Manager
 
-A modern, responsive web-based Kanban task management application built with Angular 18 and Angular CDK for drag-and-drop functionality.
+Timely is a modern, responsive full-stack Kanban task management application designed to help users "Control the Controllables". It features a sleek glassmorphism UI, a comprehensive dashboard, and integrated calendar functionality.
 
-## Features
+![Timely Dashboard](images/hourglass.png)
 
-### ✅ Completed Features (Milestone 1)
+## 🚀 Features
 
-1. **Project Setup & Environment**
-   - Angular 18 project with Angular CLI
-   - Angular CDK for drag-and-drop functionality
-   - Organized folder structure (components, services, models)
-   - Basic Kanban layout with three columns: To-Do, In Progress, Done
-   - Task model with id, title, description, priority, status, and timestamps
+### 📋 Task Management
+- **Kanban Board**: Drag-and-drop tasks between "To Do", "In Progress", and "Done".
+- **Task Operations**: Create, edit, and delete tasks with ease.
+- **Priority Indicators**: Visual color-coded badges for High, Medium, and Low priority.
+- **Table View**: A detailed list view for tracking all tasks in a structured format.
 
-2. **Task Creation Functionality**
-   - Task Form Component with title, description, and priority dropdown
-   - Add Task feature with form validation
-   - Dynamic task display in appropriate columns
-   - Modern modal-based form interface
+### 📊 Modern Dashboard
+- **Bento Grid Layout**: A sleek, modern dashboard inspired by top-tier SaaS designs.
+- **Real-time Stats**: Track total tasks, pending items, completed goals, and overdue reminders.
+- **Integrated Calendar**: FullCalendar integration to visualize task distribution and deadlines.
+- **Glassmorphism UI**: High-end dark theme design with blurred elements and vibrant gradients.
 
-3. **Edit & Delete Task**
-   - Edit Task functionality with inline form editing
-   - Delete Task with confirmation prompt
-   - Instant UI updates for all task operations
-   - Centralized task management through Task Service
+### 🔐 User Experience
+- **Authentication**: Secure login and multi-user support (locally persisted).
+- **Global Search**: Quickly find tasks across all status columns.
+- **Mobile Responsive**: Fully adaptive design that works on desktops, tablets, and smartphones.
+- **Live Clock**: Built-in header clock for time management.
 
-4. **Column Management & Task Status Update**
-   - Drag-and-drop functionality to move tasks between columns
-   - Automatic task re-rendering based on status changes
-   - Priority-based visual indicators with color-coded badges
-   - Responsive column layout
+## 🛠️ Technical Stack
 
-5. **Data Persistence & Testing**
-   - LocalStorage integration for task persistence
-   - Automatic data loading on app startup
-   - Data persistence after page refresh
-   - Basic testing and validation
+- **Frontend**: 
+  - Vanilla JavaScript (ES6+)
+  - HTML5 & Semantic Elements
+  - CSS3 (Custom design system with CSS Variables)
+  - FullCalendar.js (Calendar rendering)
+- **Backend**:
+  - Node.js (Runtime)
+  - Express.js (Web Server & API)
+- **Data Persistence**:
+  - JSON File Storage (`kanban.json`, `users.json`)
+  - No external database required (Local persistence)
 
-## Technical Stack
-
-- **Framework**: Angular 18 (Standalone Components)
-- **UI Library**: Angular CDK (Drag & Drop)
-- **Styling**: CSS3 with modern design patterns
-- **State Management**: Angular Signals
-- **Data Persistence**: LocalStorage
-- **Build Tool**: Angular CLI
-
-## Project Structure
+## 📂 Project Structure
 
 ```
-src/app/
-├── components/
-│   ├── task-form/          # Task creation/editing form
-│   ├── task-card/          # Individual task display
-│   └── kanban-column/      # Kanban column with drag-drop
-├── services/
-│   └── task.service.ts     # Central task management
-├── models/
-│   └── task.model.ts       # Task interface definition
-└── app.ts                  # Main application component
+Kanban_Project/
+├── server.js           # Node.js/Express backend & API
+├── script.js           # Vanilla JS frontend logic
+├── index.html          # Main application structure
+├── style.css           # Custom design system & styles
+├── kanban.json         # Persistent task storage
+├── users.json          # Persistent user storage
+├── images/             # UI assets and icons
+└── node_modules/       # Backend dependencies
 ```
 
-## Getting Started
+## 🏗️ Project Architecture
+
+Timely follows a standard client-server architecture with local file-based data persistence.
+
+```mermaid
+graph TD
+    subgraph Client [Browser]
+        UI[HTML5/CSS3 UI]
+        JS[Vanilla JS Logic]
+        FC[FullCalendar.js]
+        Logic[View & State Management]
+    end
+
+    subgraph Server [Node.js / Express]
+        API[REST API Endpoints]
+        Auth[Auth Middleware]
+        FS[File System Manager]
+    end
+
+    subgraph Storage [JSON Files]
+        K[kanban.json]
+        U[users.json]
+    end
+
+    UI <--> JS
+    JS <--> FC
+    JS <--> Logic
+    Logic <--> API
+    API <--> Auth
+    Auth <--> FS
+    FS <--> K
+    FS <--> U
+```
+
+### Core Architecture Components:
+1.  **Frontend (Vanilla JS)**: 
+    - Uses asynchronous `fetch` calls to communicate with the backend.
+    - Implements a custom **View Switching Engine** to toggle between Dashboard, Board, Table, and Calendar views without page reloads.
+    - Manages local state for drag-and-drop operations using the **HTML5 Drag and Drop API**.
+2.  **Backend (Node.js & Express)**:
+    - Serves static assets (HTML, CSS, JS, Images).
+    - Provides a **RESTful API** for task CRUD operations and user authentication.
+    - Implements middleware for logging and request parsing.
+3.  **Data Persistence (JSON)**:
+    - Uses the Node.js `fs` (file system) module to read and write data to local `.json` files.
+    - Implements basic data validation before writing to ensure persistence integrity.
+    - Supports multi-user data isolation by filtering tasks based on the authenticated `username`.
+
+## ⚙️ Getting Started
 
 ### Prerequisites
-
 - Node.js (v18 or higher)
-- npm or yarn
+- npm
 
-### Installation
+### Installation & Run
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd kanban-task-manager
-```
+1. **Clone the project**
+   ```bash
+   git clone <repository-url>
+   cd Kanban_Project
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Start the development server:
-```bash
-npm start
-```
+3. **Start the server**
+   ```bash
+   npm start
+   # or
+   node server.js
+   ```
 
-4. Open your browser and navigate to `http://localhost:4200`
+4. **Access the app**
+   Open your browser and navigate to `http://localhost:3000`
 
-## Usage
-
-### Adding Tasks
-1. Click the "Add Task" button in the header
-2. Fill in the task details (title is required)
-3. Select priority and initial status
-4. Click "Add Task" to save
-
-### Managing Tasks
-- **Edit**: Hover over a task card and click the edit icon
-- **Delete**: Hover over a task card and click the delete icon
-- **Move**: Drag and drop tasks between columns to change their status
-
-### Task Properties
-- **Title**: Required field for task identification
-- **Description**: Optional detailed description
-- **Priority**: Low (Green), Medium (Yellow), High (Red)
-- **Status**: To Do, In Progress, Done
-
-## Features in Detail
-
-### Drag and Drop
-- Smooth drag and drop between columns
-- Visual feedback during drag operations
-- Automatic status updates on drop
-
-### Responsive Design
-- Mobile-friendly interface
-- Adaptive column layout
-- Touch-friendly interactions
-
-### Data Persistence
-- All tasks are automatically saved to LocalStorage
-- Data persists across browser sessions
-- No data loss on page refresh
-
-### Modern UI/UX
-- Clean, modern design with gradient backgrounds
-- Smooth animations and transitions
-- Intuitive user interface
-- Accessibility considerations
-
-## Development
-
-### Building for Production
-```bash
-npm run build
-```
-
-### Running Tests
-```bash
-npm test
-```
-
-### Code Structure
-- **Standalone Components**: All components are standalone for better tree-shaking
-- **Signals**: Modern reactive state management with Angular Signals
-- **TypeScript**: Full type safety throughout the application
-- **CSS**: Modern CSS with flexbox and grid layouts
-
-## Future Enhancements
-
-### Planned Features (Next Milestones)
-- User authentication and multi-user support
-- Task categories and labels
-- Due dates and reminders
-- Task search and filtering
-- Export/import functionality
-- Real-time collaboration
-- Advanced analytics and reporting
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
+## 🛡️ License
 This project is licensed under the MIT License.
 
-## Acknowledgments
-
-- Built as part of the Infosys Internship program
-- Inspired by modern Kanban board applications
-- Uses Angular CDK for enhanced user experience
+## ✨ Acknowledgments
+- Inspired by modern Kanban and Task Management systems.
+- Built as part of an advanced full-stack development internship.
+- Special thanks to the "Timely" design philosophy: *Control the Controllables*.
