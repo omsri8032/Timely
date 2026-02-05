@@ -2,7 +2,31 @@
 
 Timely is a modern, responsive full-stack Kanban task management application designed to help users "Control the Controllables". It features a sleek glassmorphism UI, a comprehensive dashboard, and integrated calendar functionality.
 
-![Timely Dashboard](images/hourglass.png)
+![Timely Dashboard](images/showcase_03_dashboard.png)
+
+### 🖥️ Landing Page
+![Landing Page](images/showcase_01_landing.png)
+
+### 🔑 Login Page
+![Login Page](images/showcase_02_login.png)
+
+### 📊 Main Dashboard
+![Dashboard Top](images/showcase_03_dashboard.png)
+
+### 📈 Interactive Stats
+![Dashboard Stats](images/showcase_04_stats.png)
+
+### 📋 Kanban Board
+![Kanban Board](images/showcase_05_kanban.png)
+
+### 🗓️ Calendar View
+![Calendar Popover](images/showcase_06_calendar.png)
+
+### 📑 Task Table
+![Table View](images/showcase_07_table.png)
+
+### ➕ Task Modal
+![Add Task Modal](images/showcase_08_modal.png)
 
 ## 🚀 Features
 

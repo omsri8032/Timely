@@ -16,7 +16,7 @@ const authContainer = document.getElementById('auth-container');
 const boardContainer = document.getElementById('board-container');
 const authForm = document.getElementById('auth-form');
 const authTitle = document.getElementById('auth-title');
-const pageTitle = document.getElementById('page-title'); 
+const pageTitle = document.getElementById('page-title');
 const authToggleLink = document.getElementById('auth-toggle-link');
 const logoutBtn = document.getElementById('logout-btn');
 let isLoginMode = true;
@@ -61,13 +61,13 @@ logoutBtn.addEventListener('click', () => {
     currentUser = null;
     showLanding();
 });
-let allTasks = []; 
+let allTasks = [];
 async function fetchTasks() {
     if (!currentUser) return;
     try {
         const response = await fetch(`${API_URL}/tasks?user=${encodeURIComponent(currentUser)}`);
-        allTasks = await response.json();   
-        applyFilters(); 
+        allTasks = await response.json();
+        applyFilters();
     } catch (err) {
         console.error('Error fetching tasks:', err);
         alert('Failed to connect to server. Is it running?');
@@ -141,7 +141,6 @@ function renderBoard() {
 function createTaskElement(task) {
     const el = document.createElement('div');
     el.classList.add('task-card');
-    el.classList.add(`priority-${task.priority}`);
     el.draggable = true;
     el.dataset.id = task.id;
     el.addEventListener('dragstart', (e) => {
@@ -159,14 +158,17 @@ function createTaskElement(task) {
         draggedTaskId = null;
         draggedColumnId = null;
     });
+
+    const priorityClass = `priority-${task.priority}`;
+
     el.innerHTML = `
     <div class="task-header">
       <span class="task-title">${task.title}</span>
-      <span class="task-priority">${task.priority}</span>
+      <span class="priority-badge ${priorityClass}">${task.priority}</span>
     </div>
     <div class="task-actions">
-        <button class="btn-icon" onclick="openModal(null, '${task.id}')">✎</button>
-        <button class="btn-icon btn-delete" onclick="deleteTask('${task.id}')">🗑</button>
+        <button class="btn-action btn-edit" onclick="openModal(null, '${task.id}')">✎</button>
+        <button class="btn-action btn-delete" onclick="deleteTask('${task.id}')">🗑</button>
     </div>
   `;
     return el;
@@ -180,8 +182,8 @@ async function handleDrop(e) {
     const [task] = sourceCol.tasks.splice(taskIndex, 1);
     const targetCol = columns.find(c => c.id === targetColumnId);
     targetCol.tasks.push(task);
-    task.status = targetColumnId; 
-    renderBoard(); 
+    task.status = targetColumnId;
+    renderBoard();
     try {
         await fetch(`${API_URL}/tasks/${draggedTaskId}`, {
             method: 'PUT',
@@ -190,7 +192,7 @@ async function handleDrop(e) {
         });
     } catch (err) {
         console.error('Failed to sync move:', err);
-        fetchTasks(); 
+        fetchTasks();
     }
 }
 function openModal(columnId = null, taskId = null) {
@@ -200,15 +202,19 @@ function openModal(columnId = null, taskId = null) {
     const priorityInput = document.getElementById('task-priority-input');
     const idInput = document.getElementById('task-id');
     const colIdInput = document.getElementById('task-column-id');
+    const saveBtn = document.querySelector('.btn-save');
+
     if (taskId) {
         const task = findTask(taskId);
         document.getElementById('modal-title').textContent = 'Edit Task';
+        saveBtn.textContent = 'Update Task';
         titleInput.value = task.title;
         descInput.value = task.description || '';
         priorityInput.value = task.priority;
         idInput.value = task.id;
     } else {
         document.getElementById('modal-title').textContent = 'Add New Task';
+        saveBtn.textContent = 'Create Task';
         taskForm.reset();
         idInput.value = '';
         colIdInput.value = columnId || 'todo';
@@ -223,7 +229,7 @@ taskForm.addEventListener('submit', async (e) => {
         title: document.getElementById('task-title-input').value,
         description: document.getElementById('task-desc-input').value,
         priority: document.getElementById('task-priority-input').value,
-        owner: currentUser 
+        owner: currentUser
     };
     const id = document.getElementById('task-id').value;
     const columnId = document.getElementById('task-column-id').value;
@@ -235,15 +241,15 @@ taskForm.addEventListener('submit', async (e) => {
                 body: JSON.stringify(taskData)
             });
         } else {
-            taskData.status = columnId || 'todo'; 
-            taskData.dueDate = new Date().toISOString(); 
+            taskData.status = columnId || 'todo';
+            taskData.dueDate = new Date().toISOString();
             await fetch(`${API_URL}/tasks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(taskData)
             });
         }
-        fetchTasks(); 
+        fetchTasks();
         closeModal();
     } catch (err) {
         console.error('Error saving task:', err);
@@ -268,7 +274,13 @@ function findTask(taskId) {
     return null;
 }
 cancelBtn.addEventListener('click', closeModal);
-const navItems = document.querySelectorAll('.nav-btn'); 
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+
+// Close modal on outside click
+window.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+});
+const navItems = document.querySelectorAll('.nav-btn');
 navItems.forEach(item => {
     item.addEventListener('click', () => {
         navItems.forEach(n => n.classList.remove('active'));
@@ -278,10 +290,10 @@ navItems.forEach(item => {
         const targetView = document.getElementById(`${viewName}-view`);
         if (targetView) targetView.classList.remove('hidden');
         if (viewName === 'dashboard') {
-            loadDashboardStats(); 
+            loadDashboardStats();
         }
         if (viewName === 'kanban') {
-            renderBoard(); 
+            renderBoard();
         }
         if (viewName === 'calendar') {
             setTimeout(renderCalendar, 0);
@@ -332,7 +344,7 @@ async function loadDashboardStats() {
                 let statusClass = 'badge-pending';
                 if (t.status === 'inprogress') statusClass = 'badge-in_progress';
                 if (t.status === 'completed') statusClass = 'badge-completed';
-                let priorityClass = `badge-${t.priority}`; 
+                let priorityClass = `badge-${t.priority}`;
                 return `
                     <tr onclick="openModal(null, '${t.id}')">
                         <td>${t.title}</td>
@@ -398,7 +410,9 @@ function initCalendar() {
         },
         height: '100%',
         editable: false,
-        eventDisplay: 'block', 
+        eventDisplay: 'block',
+        displayEventTime: false,
+        dayMaxEvents: true,
         events: [],
         eventClick: function (info) {
             const taskId = info.event.extendedProps.taskId;
@@ -416,12 +430,12 @@ function renderCalendar() {
     columns.forEach(col => {
         col.tasks.forEach(task => {
             let color = '#0052cc';
-            if (task.priority === 'high') color = '#ff5630'; 
-            if (task.priority === 'low') color = '#36b37e';  
-            if (task.priority === 'medium') color = '#ffab00'; 
+            if (task.priority === 'high') color = '#ff5630';
+            if (task.priority === 'low') color = '#36b37e';
+            if (task.priority === 'medium') color = '#ffab00';
             const dateStr = task.dueDate ? task.dueDate : task.createdAt;
             const dateObj = new Date(dateStr);
-            const isoDate = dateObj.toISOString().split('T')[0]; 
+            const isoDate = dateObj.toISOString().split('T')[0];
             events.push({
                 title: task.title,
                 start: isoDate,
@@ -437,20 +451,30 @@ function renderCalendar() {
 }
 function renderListView() {
     const tbody = document.getElementById('task-table-body');
-    if (!tbody) return; 
+    if (!tbody) return;
     tbody.innerHTML = '';
     columns.forEach(col => {
         col.tasks.forEach(task => {
             const tr = document.createElement('tr');
-            const date = new Date(task.createdAt).toLocaleDateString();
+            const date = new Date(task.createdAt).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            const statusClass = `status-${col.id}`;
+            const priorityClass = `priority-${task.priority}`;
+
             tr.innerHTML = `
-                <td>${task.title}</td>
-                <td><span class="task-priority">${col.title}</span></td>
-                <td><span class="task-priority priority-${task.priority}">${task.priority}</span></td>
-                <td>${date}</td>
+                <td style="font-weight: 700; color: var(--text-color);">${task.title}</td>
+                <td><span class="status-badge ${statusClass}">${col.title}</span></td>
+                <td><span class="priority-badge ${priorityClass}">${task.priority}</span></td>
+                <td style="font-size: 0.85rem; color: var(--text-muted);">${date}</td>
                 <td>
-                    <button class="btn-icon" onclick="openModal(null, '${task.id}')">✎</button>
-                    <button class="btn-icon btn-delete" onclick="deleteTask('${task.id}')">🗑</button>
+                    <div class="table-actions">
+                        <button class="btn-action btn-edit" title="Edit Task" onclick="openModal(null, '${task.id}')">✎</button>
+                        <button class="btn-action btn-delete" title="Delete Task" onclick="deleteTask('${task.id}')">🗑</button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -461,7 +485,7 @@ function showLanding() {
     landingPage.classList.remove('hidden');
     authContainer.classList.add('hidden');
     boardContainer.classList.add('hidden');
-    isLoginMode = true; 
+    isLoginMode = true;
 }
 function showBoard() {
     landingPage.classList.add('hidden');
@@ -472,7 +496,7 @@ function showBoard() {
     if (user && greetingEl) {
         greetingEl.textContent = user;
     }
-    startClock(); 
+    startClock();
     fetchTasks().then(() => {
         loadDashboardStats();
     });
@@ -490,14 +514,20 @@ function checkAuth() {
     }
 }
 function updateAuthUI() {
+    const authTitleEl = document.getElementById('auth-title');
+    const authSubmitBtn = document.getElementById('auth-submit-btn');
+    const authSubtitleEl = document.querySelector('.auth-subtitle');
+
     if (isLoginMode) {
-        authTitle.textContent = 'Login';
-        authForm.querySelector('button').textContent = 'Login';
-        document.getElementById('auth-toggle-text').innerHTML = 'Don\'t have an account? <span id="auth-toggle-link">Sign up</span>';
+        if (authTitleEl) authTitleEl.textContent = 'Welcome Back';
+        if (authSubtitleEl) authSubtitleEl.textContent = 'Enter your details to continue';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Sign In';
+        document.getElementById('auth-toggle-text').innerHTML = 'Don\'t have an account? <span id="auth-toggle-link">Sign up free</span>';
     } else {
-        authTitle.textContent = 'Sign Up';
-        authForm.querySelector('button').textContent = 'Sign Up';
-        document.getElementById('auth-toggle-text').innerHTML = 'Already have an account? <span id="auth-toggle-link">Login</span>';
+        if (authTitleEl) authTitleEl.textContent = 'Join Timely';
+        if (authSubtitleEl) authSubtitleEl.textContent = 'Start managing your tasks better';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Create Account';
+        document.getElementById('auth-toggle-text').innerHTML = 'Already have an account? <span id="auth-toggle-link">Log in here</span>';
     }
     document.getElementById('auth-toggle-link').addEventListener('click', () => {
         isLoginMode = !isLoginMode;
