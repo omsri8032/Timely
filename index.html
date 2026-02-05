@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timely - Smart Task Manager</title>
+    <link rel="icon" type="image/png" href="images/hourglass.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+</head>
+
+<body>
+    <main id="app-container">
+
+        
+        <div id="landing-page">
+            <nav class="landing-nav">
+                <div class="logo-container">
+                    <img src="images/hourglass.png" alt="Timely Logo" class="logo-img">
+                    <span>Timely</span>
+                </div>
+                <div class="nav-links">
+                    <button id="nav-login-btn">Login</button>
+                    <button id="nav-signup-btn" class="btn-primary">Get Started</button>
+                </div>
+            </nav>
+
+            <header class="hero-section">
+                <div class="hero-content">
+                    <h1>Manage Your Tasks with <span class="highlight">Ease</span></h1>
+                    <p>The simple, effective way to track your projects and boost productivity.</p>
+                    <button id="hero-cta-btn" class="btn-primary btn-large">Start for Free</button>
+                </div>
+                <div class="hero-image">
+                    
+                </div>
+            </header>
+
+            <section class="features-section">
+                <div class="feature-card">
+                    <img src="images/calendar.png" alt="Easy to Use">
+                    <h3>Simple & Intuitive</h3>
+                    <p>Drag and drop tasks effortlessly. No learning curve required.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/check-circle.png" alt="Secure">
+                    <h3>Secure Data</h3>
+                    <p>Your tasks are safe with our secure file-based storage system.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/rocket.png" alt="Fast">
+                    <h3>Lightning Fast</h3>
+                    <p>Built with pure Vanilla JS for maximum performance.</p>
+                </div>
+            </section>
+
+            <footer class="landing-footer">
+                <p>&copy; 2026 Timely. Created by <strong>OM SRIVASTAVA</strong>.</p>
+            </footer>
+        </div>
+
+        
+        <div id="auth-container" class="auth-container hidden">
+            <button id="back-to-landing" class="back-btn">← Back</button>
+            <div class="auth-box">
+                <h2 id="auth-title">Login</h2>
+                <form id="auth-form">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" id="auth-submit-btn">Login</button>
+                </form>
+                <p id="auth-toggle-text">Don't have an account? <span id="auth-toggle-link">Sign up</span></p>
+            </div>
+        </div>
+
+        
+        <div id="board-container" class="dashboard-container hidden">
+
+            
+            <header class="header-container">
+                <div class="header-area">
+                    <div class="logo brand-box">
+                        <img src="images/hourglass.png" class="logo-icon" alt="Logo">
+                        <div class="brand-text">
+                            <h1 class="brand-name">Timely</h1>
+                            <div class="divider"></div>
+                            <div class="slogan-stack">
+                                <span class="slogan-bottom">"Control the Controllables"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="header-right">
+
+                        <button class="header-btn nav-btn active" data-view="dashboard">
+                            <img src="images/dashboard.png" class="btn-icon" alt="">
+                            Dashboard
+                        </button>
+
+                        <button class="header-btn nav-btn" data-view="kanban">
+                            <img src="images/tasks.png" class="btn-icon" alt="">
+                            Tasks
+                        </button>
+
+                        <button class="header-btn nav-btn" data-view="calendar">
+                            <img src="images/calendar.png" class="btn-icon" alt="">
+                            Calendar
+                        </button>
+
+                        <button class="header-btn add-btn" id="add-task-global-header">
+                            <img src="images/plus.png" class="btn-icon" alt="">
+                            Add Task
+                        </button>
+
+                        <a href="#" class="profile-avatar" title="View Profile">
+                            <img src="images/profile.png" alt="Profile">
+                        </a>
+
+                        <button id="logout-btn" class="logout-icon" title="Logout">
+                            <img src="images/logout.png" alt="Logout" style="filter: brightness(0) invert(1);">
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            
+            <main class="dashboard-main" style="padding-top: 2rem;">
+                
+
+
+                
+
+                
+                <div id="dashboard-view" class="view-section">
+                    
+                    <div class="header-stats-row">
+                        <div class="status-glass">
+                            <div class="status-header">
+                                <span class="status-value" id="stat-completion-rate">0%</span>
+                                <span class="status-label">Tasks Completed</span>
+                            </div>
+                            <div class="tech-bar">
+                                <div class="tech-fill" id="stat-progress-bar" style="width: 0%">
+                                    <div class="fill-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="total-tasks-calendar">
+                            <div class="cal-top">Total Tasks</div>
+                            <div class="cal-body">
+                                <span class="cal-count stat-number" id="stat-total-count">0</span>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="bento-grid">
+                        
+                        <section class="grid-item deadlines-wide">
+                            <div class="section-header">
+                                <img src="images/calendar.png" class="section-icon">
+                                <h3 class="accent-text">Urgent Deadlines</h3>
+                            </div>
+                            <div class="deadlines-inner">
+                                <div class="stat-card overdue" onclick="openStatModal('overdue')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Overdue</span>
+                                        <p class="stat-number" id="stat-overdue-count">0</p>
+                                    </div>
+                                    <img src="images/overdue.png" class="card-icon">
+                                </div>
+                                <div class="stat-card today" onclick="openStatModal('today')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Due Today</span>
+                                        <p class="stat-number" id="stat-today-count">0</p>
+                                    </div>
+                                    <img src="images/today.png" class="card-icon">
+                                </div>
+                            </div>
+                        </section>
+
+                        
+                        <section class="grid-item status-box">
+                            <div class="section-header">
+                                <img src="images/tasks.png" class="section-icon">
+                                <h3 class="accent-text">Task Status</h3>
+                            </div>
+                            <div class="status-split-grid">
+                                <div class="stat-card pending" onclick="openStatModal('pending')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Pending</span>
+                                        <p class="stat-number" id="stat-pending-count">0</p>
+                                    </div>
+                                    <img src="images/pending.png" class="card-icon">
+                                </div>
+                                <div class="stat-card inprogress" onclick="openStatModal('inprogress')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Active</span>
+                                        <p class="stat-number" id="stat-inprogress-count">0</p>
+                                    </div>
+                                    <img src="images/inprogress.png" class="card-icon">
+                                </div>
+                                <div class="stat-card completed full-width" onclick="openStatModal('completed')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Completed</span>
+                                        <p class="stat-number" id="stat-completed-count">0</p>
+                                    </div>
+                                    <img src="images/completed.png" class="card-icon">
+                                </div>
+                            </div>
+                        </section>
+
+                        
+                        <section class="grid-item priority-box">
+                            <div class="section-header">
+                                <img src="images/priority.png" class="section-icon">
+                                <h3 class="accent-text">Priority Focus</h3>
+                            </div>
+                            <div class="priority-vertical-stack">
+                                <div class="stat-card high" onclick="openStatModal('high')">
+                                    <div class="card-left">
+                                        <span class="stat-label">High</span>
+                                        <p class="stat-number" id="stat-high-count">0</p>
+                                    </div>
+                                    <div class="priority-indicator">▲</div>
+                                </div>
+                                <div class="stat-card medium" onclick="openStatModal('medium')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Medium</span>
+                                        <p class="stat-number" id="stat-medium-count">0</p>
+                                    </div>
+                                    <div class="priority-indicator">●</div>
+                                </div>
+                                <div class="stat-card low" onclick="openStatModal('low')">
+                                    <div class="card-left">
+                                        <span class="stat-label">Low</span>
+                                        <p class="stat-number" id="stat-low-count">0</p>
+                                    </div>
+                                    <div class="priority-indicator">▼</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    
+                    <section class="recent-tasks-box">
+                        <div class="section-header">
+                            <img src="images/recent.png" class="section-icon">
+                            <h3 class="accent-text">Recent Tasks</h3>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="recent-table">
+                                <thead>
+                                    <tr>
+                                        <th>Task Name</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-tasks-body">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                
+                <div id="kanban-view" class="view-section hidden">
+                    <div class="board" id="board">
+                        
+                    </div>
+                </div>
+
+                
+                <div id="list-view" class="view-section hidden">
+                    <div class="table-container">
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="task-table-body">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="calendar-view" class="view-section hidden">
+                    <div id="calendar"></div>
+                </div>
+        </div>
+    </main>
+
+    
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Add New Task</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <input type="hidden" id="task-column-id">
+
+                <div class="form-group">
+                    <label for="task-title-input">Title</label>
+                    <input type="text" id="task-title-input" required placeholder="Enter task title...">
+                </div>
+
+                <div class="form-group">
+                    <label for="task-desc-input">Description</label>
+                    <textarea id="task-desc-input" rows="3" placeholder="Enter task description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-priority-input">Priority</label>
+                    <select id="task-priority-input">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-save">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

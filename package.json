@@ -1,55 +1,27 @@
 {
-  "name": "kanban-task-manager",
-  "version": "0.0.0",
+  "name": "kanban_project",
+  "version": "1.0.0",
+  "description": "A modern, responsive web-based Kanban task management application built with Angular 18 and Angular CDK for drag-and-drop functionality.",
+  "main": "script.js",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:kanban-task-manager": "node dist/kanban-task-manager/server/server.mjs"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Springboard-Internship-2025/Web-Based-Kanban-Task-Manager-with-Drag-and-Drop-Functionality_August_2025.git"
   },
-  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Springboard-Internship-2025/Web-Based-Kanban-Task-Manager-with-Drag-and-Drop-Functionality_August_2025/issues"
+  },
+  "homepage": "https://github.com/Springboard-Internship-2025/Web-Based-Kanban-Task-Manager-with-Drag-and-Drop-Functionality_August_2025#readme",
   "dependencies": {
-    "@angular/animations": "^20.2.1",
-    "@angular/cdk": "^20.2.0",
-    "@angular/common": "^20.2.0",
-    "@angular/compiler": "^20.2.0",
-    "@angular/core": "^20.2.0",
-    "@angular/forms": "^20.2.0",
-    "@angular/platform-browser": "^20.2.0",
-    "@angular/platform-server": "^20.2.0",
-    "@angular/router": "^20.2.0",
-    "@angular/ssr": "^20.2.0",
-    "express": "^5.1.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "@angular/build": "^20.2.0",
-    "@angular/cli": "^20.2.0",
-    "@angular/compiler-cli": "^20.2.0",
-    "@types/express": "^5.0.1",
-    "@types/jasmine": "~5.1.0",
-    "@types/node": "^20.17.19",
-    "jasmine-core": "~5.9.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.9.2"
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.6"
   }
 }
