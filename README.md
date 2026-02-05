@@ -60,7 +60,6 @@ Timely is a modern, responsive full-stack Kanban task management application des
   - Express.js (Web Server & API)
 - **Data Persistence**:
   - JSON File Storage (`kanban.json`, `users.json`)
-  - No external database required (Local persistence)
 
 ## 📂 Project Structure
 
