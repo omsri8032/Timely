@@ -38,3 +38,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Project data files (data lives in MongoDB Atlas now)
+kanban.json
+users.json
+migrate.js

@@ -256,6 +256,17 @@ h6 {
     color: #de350b;
 }
 
+.task-due-date {
+    display: inline-block;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    padding: 3px 8px;
+    background: rgba(90, 119, 245, 0.08);
+    border-radius: 6px;
+    font-weight: 500;
+}
+
 .task-actions {
     display: flex;
     justify-content: flex-end;

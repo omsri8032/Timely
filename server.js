@@ -1,16 +1,48 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs'); 
-const path = require('path');
+const mongoose = require('mongoose');
 const app = express();
-const PORT = 3000;
-const DB_FILE = path.join(__dirname, 'kanban.json');
-const USERS_FILE = path.join(__dirname, 'users.json');
+const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/kanban')
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Could not connect to MongoDB', err));
+
+// --- Schemas & Models ---
+
+const TaskSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    priority: String,
+    status: String,
+    owner: String,
+    dueDate: String,
+    createdAt: { type: Date, default: Date.now }
+});
+
+// Map _id to id for frontend compatibility
+TaskSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret) => { delete ret._id; }
+});
+
+const Task = mongoose.model('Task', TaskSchema);
+
+const UserSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true }
+});
+
+const User = mongoose.model('User', UserSchema);
+
+// --- Middleware ---
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
@@ -19,88 +51,78 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express.static(__dirname));
-function readData(filePath) {
-    if (!fs.existsSync(filePath)) {
-        return [];
-    }
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data || '[]');
-}
-function writeData(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-}
-app.get('/api/tasks', (req, res) => {
+
+// --- API Routes ---
+
+app.get('/api/tasks', async (req, res) => {
     try {
-        const tasks = readData(DB_FILE);
         const user = req.query.user;
-        if (user) {
-            const userTasks = tasks.filter(t => t.owner === user);
-            res.json(userTasks);
-        } else {
-            res.json(tasks);
-        }
+        const query = user ? { owner: user } : {};
+        const tasks = await Task.find(query);
+        res.json(tasks);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to read data' });
     }
 });
-app.post('/api/tasks', (req, res) => {
+
+app.post('/api/tasks', async (req, res) => {
     try {
-        const tasks = readData(DB_FILE);
-        const { title, description, priority, status, owner } = req.body;
+        const { title, description, priority, status, owner, dueDate } = req.body;
         if (!owner) {
             return res.status(400).json({ error: 'Task owner is required' });
         }
-        const newTask = {
-            id: Date.now().toString(),
-            title,
-            description,
-            priority,
-            status,
-            owner, 
-            createdAt: new Date().toISOString()
-        };
-        tasks.push(newTask);
-        writeData(DB_FILE, tasks);
+        const newTask = await Task.create({
+            title, description, priority, status, owner,
+            dueDate: dueDate || '',
+            createdAt: new Date()
+        });
         res.status(201).json(newTask);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to save task' });
     }
 });
-app.put('/api/tasks/:id', (req, res) => {
+
+app.put('/api/tasks/:id', async (req, res) => {
     try {
-        const tasks = readData(DB_FILE);
-        const index = tasks.findIndex(t => t.id === req.params.id);
-        if (index === -1) {
+        const updatedTask = await Task.findByIdAndUpdate(
+            req.params.id, req.body, { new: true }
+        );
+        if (!updatedTask) {
             return res.status(404).json({ error: 'Task not found' });
         }
-        tasks[index] = { ...tasks[index], ...req.body };
-        writeData(DB_FILE, tasks);
-        res.json(tasks[index]);
+        res.json(updatedTask);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to update task' });
     }
 });
-app.delete('/api/tasks/:id', (req, res) => {
+
+app.delete('/api/tasks/:id', async (req, res) => {
     try {
-        let tasks = readData(DB_FILE);
-        const newTasks = tasks.filter(t => t.id !== req.params.id);
-        writeData(DB_FILE, newTasks);
+        const result = await Task.findByIdAndDelete(req.params.id);
+        if (!result) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
         res.json({ message: 'Task deleted' });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to delete task' });
     }
 });
-app.get('/api/dashboard/stats', (req, res) => {
+
+app.get('/api/dashboard/stats', async (req, res) => {
     try {
-        const tasks = readData(DB_FILE);
         const user = req.query.user;
         if (!user) {
             return res.status(400).json({ error: 'User required' });
         }
-        const userTasks = tasks.filter(t => t.owner === user);
+        const userTasks = await Task.find({ owner: user });
         const todayStr = new Date().toISOString().split('T')[0];
+
         const completed = userTasks.filter(t => t.status === 'done' || t.status === 'completed');
-        const pending = userTasks.filter(t => t.status === 'todo'); 
+        const pending = userTasks.filter(t => t.status === 'todo');
         const inProgress = userTasks.filter(t => t.status === 'inprogress');
         const overdue = userTasks.filter(t => {
             const isDone = t.status === 'done' || t.status === 'completed';
@@ -114,9 +136,11 @@ app.get('/api/dashboard/stats', (req, res) => {
         const priorityHigh = userTasks.filter(t => t.priority === 'high' && t.status !== 'done' && t.status !== 'completed');
         const priorityMed = userTasks.filter(t => t.priority === 'medium' && t.status !== 'done' && t.status !== 'completed');
         const priorityLow = userTasks.filter(t => t.priority === 'low' && t.status !== 'done' && t.status !== 'completed');
-        const recent = [...userTasks].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+        const recent = await Task.find({ owner: user }).sort({ createdAt: -1 }).limit(5);
+
         const total = userTasks.length;
         const rate = total === 0 ? 0 : Math.round((completed.length / total) * 100);
+
         res.json({
             totalCount: total,
             completedCount: completed.length,
@@ -135,15 +159,17 @@ app.get('/api/dashboard/stats', (req, res) => {
         res.status(500).json({ error: 'Failed to calc stats' });
     }
 });
-app.get('/api/dashboard/tasks', (req, res) => {
+
+app.get('/api/dashboard/tasks', async (req, res) => {
     try {
-        const tasks = readData(DB_FILE);
         const { user, type } = req.query;
         if (!user || !type) return res.status(400).json({ error: 'Missing params' });
-        const userTasks = tasks.filter(t => t.owner === user);
+
+        const userTasks = await Task.find({ owner: user });
         let filtered = [];
         const todayStr = new Date().toISOString().split('T')[0];
         const isNotDone = (t) => t.status !== 'done' && t.status !== 'completed';
+
         switch (type) {
             case 'completed':
                 filtered = userTasks.filter(t => t.status === 'done' || t.status === 'completed'); break;
@@ -166,42 +192,44 @@ app.get('/api/dashboard/tasks', (req, res) => {
         }
         res.json(filtered);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Filter failed' });
     }
 });
-app.post('/api/signup', (req, res) => {
+
+app.post('/api/signup', async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
             return res.status(400).json({ error: 'Username and password required' });
         }
-        const users = readData(USERS_FILE);
-        if (users.find(u => u.username === username)) {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
             return res.status(400).json({ error: 'User already exists' });
         }
-        const newUser = { id: Date.now().toString(), username, password };
-        users.push(newUser);
-        writeData(USERS_FILE, users);
-        res.status(201).json({ message: 'User created successfully', user: { username } });
+        const newUser = await User.create({ username, password });
+        res.status(201).json({ message: 'User created successfully', user: { username: newUser.username } });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Signup failed' });
     }
 });
-app.post('/api/login', (req, res) => {
+
+app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const users = readData(USERS_FILE);
-        const user = users.find(u => u.username === username && u.password === password);
+        const user = await User.findOne({ username, password });
         if (user) {
-            res.json({ message: 'Login successful', user: { username } });
+            res.json({ message: 'Login successful', user: { username: user.username } });
         } else {
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Login failed' });
     }
 });
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Data will be saved to: ${DB_FILE}`);
 });

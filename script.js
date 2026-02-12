@@ -10,7 +10,7 @@ const modal = document.getElementById('task-modal');
 const taskForm = document.getElementById('task-form');
 const cancelBtn = document.getElementById('cancel-btn');
 const landingPage = document.getElementById('landing-page');
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 let currentUser = localStorage.getItem('kanbanUser');
 const authContainer = document.getElementById('auth-container');
 const boardContainer = document.getElementById('board-container');
@@ -161,11 +161,14 @@ function createTaskElement(task) {
 
     const priorityClass = `priority-${task.priority}`;
 
+    const dueDateDisplay = task.dueDate ? `<span class="task-due-date">📅 ${task.dueDate}</span>` : '';
+
     el.innerHTML = `
     <div class="task-header">
       <span class="task-title">${task.title}</span>
       <span class="priority-badge ${priorityClass}">${task.priority}</span>
     </div>
+    ${dueDateDisplay}
     <div class="task-actions">
         <button class="btn-action btn-edit" onclick="openModal(null, '${task.id}')">✎</button>
         <button class="btn-action btn-delete" onclick="deleteTask('${task.id}')">🗑</button>
@@ -204,6 +207,8 @@ function openModal(columnId = null, taskId = null) {
     const colIdInput = document.getElementById('task-column-id');
     const saveBtn = document.querySelector('.btn-save');
 
+    const dueDateInput = document.getElementById('task-duedate-input');
+
     if (taskId) {
         const task = findTask(taskId);
         document.getElementById('modal-title').textContent = 'Edit Task';
@@ -211,6 +216,7 @@ function openModal(columnId = null, taskId = null) {
         titleInput.value = task.title;
         descInput.value = task.description || '';
         priorityInput.value = task.priority;
+        dueDateInput.value = task.dueDate || '';
         idInput.value = task.id;
     } else {
         document.getElementById('modal-title').textContent = 'Add New Task';
@@ -229,6 +235,7 @@ taskForm.addEventListener('submit', async (e) => {
         title: document.getElementById('task-title-input').value,
         description: document.getElementById('task-desc-input').value,
         priority: document.getElementById('task-priority-input').value,
+        dueDate: document.getElementById('task-duedate-input').value,
         owner: currentUser
     };
     const id = document.getElementById('task-id').value;
@@ -242,7 +249,6 @@ taskForm.addEventListener('submit', async (e) => {
             });
         } else {
             taskData.status = columnId || 'todo';
-            taskData.dueDate = new Date().toISOString();
             await fetch(`${API_URL}/tasks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
