@@ -152,10 +152,5 @@ graph TD
 4. **Access the app**
    Open your browser and navigate to `http://localhost:3000`
 
-## 🛡️ License
-This project is licensed under the MIT License.
 
-## ✨ Acknowledgments
-- Inspired by modern Kanban and Task Management systems.
-- Built as part of an advanced full-stack development internship.
-- Special thanks to the "Timely" design philosophy: *Control the Controllables*.
+
